@@ -1,3 +1,3 @@
-module github.com/codecrafters-io/shell-starter-go
+module github.com/EshaanAgg/shell-go
 
 go 1.24.0
