@@ -2,7 +2,6 @@ package shell
 
 import (
 	"fmt"
-	"io"
 	"os"
 )
 
@@ -67,11 +66,12 @@ func (c *command) checkForRedirection() error {
 
 // getFile opens a file for writing. If append is true, it opens the file in append mode.
 // Otherwise, it creates a new file. If the file already exists, it truncates it.
-func getFile(fileName string, append bool) (io.Writer, error) {
+func getFile(fileName string, append bool) (*os.File, error) {
 	if append {
-		appendMode := os.O_APPEND | os.O_CREATE
+		appendMode := os.O_APPEND | os.O_WRONLY | os.O_CREATE
 		return os.OpenFile(fileName, appendMode, 0644)
 	}
 
-	return os.Create(fileName)
+	createMode := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
+	return os.OpenFile(fileName, createMode, 0644)
 }

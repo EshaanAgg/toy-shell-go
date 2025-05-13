@@ -2,7 +2,6 @@ package shell
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
@@ -13,8 +12,8 @@ import (
 // in the shell. It should have no redirection or piping.
 type command struct {
 	args    []string
-	outFile io.Writer
-	errFile io.Writer
+	outFile *os.File
+	errFile *os.File
 }
 
 // newCommand creates a new command from the given line.

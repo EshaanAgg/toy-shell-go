@@ -2,7 +2,6 @@ package shell
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 
@@ -12,7 +11,7 @@ import (
 // defaultCommandHandler is the default command handler for unrecognized commands.
 // This is defined here and not in the "cmd" package because it needs access to the
 // shell's environment and state.
-func (s *Shell) defaultCommandHandler(args []string, outFile io.Writer, errFile io.Writer) {
+func (s *Shell) defaultCommandHandler(args []string, outFile *os.File, errFile *os.File) {
 	// Check for executable in path
 	cmd := args[0]
 	path := utils.IsExecutableInPath(cmd)
