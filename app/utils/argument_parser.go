@@ -51,26 +51,22 @@ func (p *parser) inDoubleQuotes() bool {
 	return p.quoted != nil && *p.quoted == '"'
 }
 
-func (p *parser) parse() ([]string, error) {
+func (p *parser) parse() []string {
 	for {
 		b := p.next()
 
 		if b == 0 {
 			p.addToken()
-			return p.tokens, nil
+			return p.tokens
 		}
 
 		if p.inSingleQuotes() {
-			if err := p.handleSingleQuote(b); err != nil {
-				return nil, err
-			}
+			p.handleSingleQuote(b)
 			continue
 		}
 
 		if p.inDoubleQuotes() {
-			if err := p.handleDoubleQuote(b); err != nil {
-				return nil, err
-			}
+			p.handleDoubleQuote(b)
 			continue
 		}
 
@@ -100,22 +96,18 @@ func (p *parser) parse() ([]string, error) {
 
 // In single quote, all characters are part of the token.
 // Only a single quote can end the token.
-func (p *parser) handleSingleQuote(b byte) error {
+func (p *parser) handleSingleQuote(b byte) {
 	if b == '\'' {
 		p.quoted = nil
-		if err := p.expectDelimiter(); err != nil {
-			return err
-		}
 		p.addToken()
 	} else {
 		p.currentToken += string(b)
 	}
-	return nil
 }
 
 // In double quotes, there is limited escaping.
 // The blackslash (\) can be used to escape (' " $ \n) bytes.
-func (p *parser) handleDoubleQuote(b byte) error {
+func (p *parser) handleDoubleQuote(b byte) {
 	if p.escapeNext {
 		switch b {
 		case '\\', '"', '$', '\n':
@@ -125,7 +117,7 @@ func (p *parser) handleDoubleQuote(b byte) error {
 			p.currentToken += "\\" + string(b)
 		}
 		p.escapeNext = false
-		return nil
+		return
 	}
 
 	switch b {
@@ -134,16 +126,11 @@ func (p *parser) handleDoubleQuote(b byte) error {
 
 	case '"':
 		p.quoted = nil
-		if err := p.expectDelimiter(); err != nil {
-			return err
-		}
 		p.addToken()
 
 	default:
 		p.currentToken += string(b)
 	}
-
-	return nil
 }
 
 // GetTokens parses the input byte array and returns a slice of tokens.
@@ -153,5 +140,13 @@ func GetTokens(input []byte) ([]string, error) {
 	p := &parser{
 		input: input,
 	}
-	return p.parse()
+
+	toks := p.parse()
+	if p.inSingleQuotes() || p.inDoubleQuotes() {
+		return nil, fmt.Errorf("unmatched quotes in input")
+	}
+	if p.escapeNext {
+		return nil, fmt.Errorf("unmatched escape character in input")
+	}
+	return toks, nil
 }

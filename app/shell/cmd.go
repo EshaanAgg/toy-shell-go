@@ -11,7 +11,7 @@ import (
 func (s *Shell) ExecuteCommand(line []byte) {
 	args, err := utils.GetTokens(line)
 	if err != nil {
-		fmt.Printf("Error parsing command: %v\r\n", err)
+		fmt.Fprintf(os.Stderr, "error parsing command: %v\r\n", err)
 		return
 	}
 
