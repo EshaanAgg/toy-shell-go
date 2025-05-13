@@ -1,21 +1,17 @@
 package cmd
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strings"
+)
 
-func HandleEcho(args []string) {
-	l := len(args)
-
-	if l == 0 {
+func HandleEcho(args []string, outFile *os.File, errFile *os.File) {
+	if len(args) == 0 {
+		fmt.Fprintf(outFile, "usage: echo <message>, received unexpected args: %v\r\n", args)
 		return
 	}
 
-	for i, str := range args {
-		if i == l-1 {
-			// If it's the last string, print a newline after it
-			fmt.Printf("%s\n", str)
-		} else {
-			// Find a space after the intermediate strings
-			fmt.Printf("%s ", str)
-		}
-	}
+	message := strings.Join(args, " ")
+	fmt.Fprintf(outFile, "%s\r\n", message)
 }

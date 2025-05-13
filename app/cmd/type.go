@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"slices"
 
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
 
-func HandleType(args []string) {
+func HandleType(args []string, outFile *os.File, errFile *os.File) {
 	if len(args) == 0 {
-		fmt.Println("Usage: type <command>")
+		fmt.Fprintf(outFile, "usage: type <command>, received unexpected args: %v\r\n", args)
 		return
 	}
 
@@ -18,17 +19,17 @@ func HandleType(args []string) {
 	// Check for shell built-in
 	exists := slices.Index(AllCommands, cmd)
 	if exists != -1 {
-		fmt.Printf("%s is a shell builtin\n", cmd)
+		fmt.Fprintf(outFile, "%s is a shell builtin\r\n", cmd)
 		return
 	}
 
 	// Check for executable in path
 	path := utils.IsExecutableInPath(cmd)
 	if path != nil {
-		fmt.Printf("%s is %s\n", cmd, *path)
+		fmt.Fprintf(outFile, "%s is %s\r\n", cmd, *path)
 		return
 	}
 
 	// Unrecognized
-	fmt.Printf("%s: not found\n", cmd)
+	fmt.Fprintf(errFile, "%s: command not found\r\n", cmd)
 }

@@ -7,9 +7,9 @@ import (
 
 const HOME_DIRECTORY_MARKER = "~"
 
-func HandleCD(args []string) {
+func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 	if len(args) != 1 {
-		fmt.Printf("usage: cd <path-to-new-dir>, recieved unexpected args: %v\n", args)
+		fmt.Fprintf(errFile, "usage: cd <path-to-new-dir>, received unexpected args: %v\r\n", args)
 		return
 	}
 
@@ -21,7 +21,7 @@ func HandleCD(args []string) {
 
 	err := os.Chdir(path)
 	if err != nil {
-		fmt.Printf("cd: %s: No such file or directory\n", args[0])
+		fmt.Fprintf(errFile, "cd: %s: %v\r\n", path, err)
 		return
 	}
 }
