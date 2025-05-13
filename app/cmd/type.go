@@ -23,11 +23,7 @@ func HandleType(args []string) {
 	}
 
 	// Check for executable in path
-	path, err := utils.IsExecutableInPath(cmd)
-	if err != nil {
-		fmt.Printf("error while parsing the folders in PATH: %v", err)
-		return
-	}
+	path := utils.IsExecutableInPath(cmd)
 	if path != nil {
 		fmt.Printf("%s is %s\n", cmd, *path)
 		return

@@ -26,11 +26,7 @@ func DefaultHandler(args []string) {
 
 	// Check for executable in path
 	cmd := args[0]
-	path, err := utils.IsExecutableInPath(cmd)
-	if err != nil {
-		fmt.Printf("error while parsing the folders in PATH: %v", err)
-		return
-	}
+	path := utils.IsExecutableInPath(cmd)
 	// Run the exectuable
 	if path != nil {
 		executeBinary(cmd, args[1:]...)

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,14 +8,18 @@ import (
 
 const EXECUTABLE_MASK = 0111
 
-func IsExecutableInPath(cmd string) (*string, error) {
+// IsExecutableInPath returns the path to a executable file with the provided name.
+// The returned pointer is nil if the same was not found. Any errors in reading
+// directories & file properties as ignored as the process may not have the
+// appropiate permissions for some system directories.
+func IsExecutableInPath(cmd string) *string {
 	path := os.Getenv("PATH")
 	pathDirs := strings.SplitSeq(path, ":")
 
 	for dir := range pathDirs {
 		entries, err := os.ReadDir(dir)
 		if err != nil {
-			return nil, fmt.Errorf("unable to read entries in dir '%s': %w", dir, err)
+			continue
 		}
 
 		for _, entry := range entries {
@@ -25,14 +28,14 @@ func IsExecutableInPath(cmd string) (*string, error) {
 				fullPath := filepath.Join(dir, entry.Name())
 				info, err := os.Stat(fullPath)
 				if err != nil {
-					return nil, fmt.Errorf("unable to get the permissions for the executable '%s': %w", fullPath, err)
+					continue
 				}
 				if info.Mode()&EXECUTABLE_MASK != 0 {
-					return &fullPath, nil
+					return &fullPath
 				}
 			}
 		}
 	}
 
-	return nil, nil
+	return nil
 }
