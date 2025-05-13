@@ -6,6 +6,8 @@ var AllCommands = []string{
 	"exit",
 	"echo",
 	"type",
+	"pwd",
+	"cd",
 }
 
 var HandlerMap = map[string]CommandHandler{
