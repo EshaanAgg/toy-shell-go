@@ -42,5 +42,7 @@ func (s *Shell) readByte() byte {
 }
 
 func (s *Shell) putPrompt() {
-	fmt.Print("$ ")
+	// Always move the cursor to the beginning of the line
+	// before printing the prompt
+	fmt.Print("\r$ ")
 }

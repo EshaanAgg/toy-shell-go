@@ -18,9 +18,7 @@ func DefaultHandler(args []string, outFile *os.File, errFile *os.File) {
 		p := exec.Command(*path, args[1:]...)
 		p.Stdout = outFile
 		p.Stderr = errFile
-		if err := p.Run(); err != nil {
-			fmt.Fprintf(errFile, "the command exited with error: %v\r\n", err)
-		}
+		p.Run()
 		return
 	}
 
