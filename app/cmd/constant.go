@@ -12,4 +12,6 @@ var HandlerMap = map[string]CommandHandler{
 	"exit": HandleExit,
 	"echo": HandleEcho,
 	"type": HandleType,
+	"pwd":  HandlePWD,
+	"cd":   HandleCD,
 }
