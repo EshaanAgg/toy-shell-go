@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"strings"
 )
 
-func HandleEcho(args []string, outFile *os.File, errFile *os.File) {
+func HandleEcho(args []string, outFile io.Writer, errFile io.Writer) {
 	if len(args) == 0 {
 		fmt.Fprintf(outFile, "usage: echo <message>, received unexpected args: %v\r\n", args)
 		return

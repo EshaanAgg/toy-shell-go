@@ -1,8 +1,8 @@
 package cmd
 
-import "os"
+import "io"
 
-type CommandHandler func(args []string, outFile *os.File, errFile *os.File)
+type CommandHandler func(args []string, outFile io.Writer, errFile io.Writer)
 
 func init() {
 	// Initialize the list of all commands

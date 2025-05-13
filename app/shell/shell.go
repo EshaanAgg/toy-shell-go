@@ -39,3 +39,12 @@ func (s *Shell) putPrompt() {
 	// before printing the prompt
 	fmt.Print("$ ")
 }
+
+func (s *Shell) ExecuteCommand(line []byte) {
+	cmd, err := newCommand(line)
+	if err != nil {
+		fmt.Printf("Error creating command: %v\r\n", err)
+		return
+	}
+	cmd.execute(s)
+}

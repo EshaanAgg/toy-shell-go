@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 )
 
-func HandleExit(args []string, outFile *os.File, errFile *os.File) {
+func HandleExit(args []string, outFile io.Writer, errFile io.Writer) {
 	if len(args) != 1 {
 		fmt.Fprintf(errFile, "usage: exit <exit-code>, received unexpected args: %v\r\n", args)
 	}

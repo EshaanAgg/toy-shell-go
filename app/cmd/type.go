@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"slices"
 
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
 
-func HandleType(args []string, outFile *os.File, errFile *os.File) {
+func HandleType(args []string, outFile io.Writer, errFile io.Writer) {
 	if len(args) == 0 {
 		fmt.Fprintf(outFile, "usage: type <command>, received unexpected args: %v\r\n", args)
 		return
