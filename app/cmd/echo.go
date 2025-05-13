@@ -11,8 +11,10 @@ func HandleEcho(args []string) {
 
 	for i, str := range args {
 		if i == l-1 {
-			fmt.Print(str)
+			// If it's the last string, print a newline after it
+			fmt.Printf("%s\n", str)
 		} else {
+			// Find a space after the intermediate strings
 			fmt.Printf("%s ", str)
 		}
 	}
