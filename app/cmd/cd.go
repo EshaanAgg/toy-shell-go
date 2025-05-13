@@ -21,7 +21,7 @@ func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 
 	// Check if the directory exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		fmt.Fprintf(errFile, "cd: %s: no such file or directory\r\n", path)
+		fmt.Fprintf(errFile, "cd: %s: No such file or directory\r\n", path)
 		return
 	}
 
