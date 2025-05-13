@@ -21,9 +21,10 @@ func (s *Shell) defaultCommandHandler(args []string, outFile *os.File, errFile *
 	if path != nil {
 		s.ExitRAWMode()
 
-		p := exec.Command(*path, args[1:]...)
+		p := exec.Command(cmd, args[1:]...)
 		p.Stdout = outFile
 		p.Stderr = errFile
+		p.Stdin = os.Stdin
 		p.Run()
 
 		s.EnterRAWMode()
