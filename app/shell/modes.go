@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Shell) EnterRAWMode() {
-	if s.originalTerminalState == nil {
+	if s.originalTerminalState != nil {
 		panic("Already in raw mode")
 	}
 
