@@ -19,9 +19,15 @@ func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 		path = os.Getenv("HOME")
 	}
 
+	// Check if the directory exists
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		fmt.Fprintf(errFile, "cd: %s: no such file or directory\r\n", path)
+		return
+	}
+
 	err := os.Chdir(path)
 	if err != nil {
-		fmt.Fprintf(errFile, "%v\r\n", err)
+		fmt.Fprintf(errFile, "cd: %s: %v\r\n", path, err)
 		return
 	}
 }
