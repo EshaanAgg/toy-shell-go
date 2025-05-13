@@ -3,10 +3,35 @@ package shell
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
+
+// defaultCommandHandler is the default command handler for unrecognized commands.
+// This is defined here and not in the "cmd" package because it needs access to the
+// shell's environment and state.
+func (s *Shell) defaultCommandHandler(args []string, outFile *os.File, errFile *os.File) {
+	// Check for executable in path
+	cmd := args[0]
+	path := utils.IsExecutableInPath(cmd)
+
+	// Run the exectuable
+	if path != nil {
+		s.ExitRAWMode()
+
+		p := exec.Command(*path, args[1:]...)
+		p.Stdout = outFile
+		p.Stderr = errFile
+		p.Run()
+
+		s.EnterRAWMode()
+	}
+
+	// Unrecognized
+	fmt.Fprintf(errFile, "%s: command not found\r\n", cmd)
+}
 
 func (s *Shell) ExecuteCommand(line []byte) {
 	args, err := utils.GetTokens(line)
@@ -27,6 +52,6 @@ func (s *Shell) ExecuteCommand(line []byte) {
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		handler(args[1:], defaultOutput, defaultError)
 	} else {
-		cmd.DefaultHandler(args, defaultOutput, defaultError)
+		s.defaultCommandHandler(args, defaultOutput, defaultError)
 	}
 }

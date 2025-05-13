@@ -15,20 +15,13 @@ type Shell struct {
 }
 
 func NewShell() *Shell {
-	oldTerminalState, err := term.MakeRaw(int(os.Stdin.Fd()))
-	if err != nil {
-		panic(fmt.Sprintf("Error making terminal raw: %v", err))
-	}
-	return &Shell{
-		originalTerminalState: oldTerminalState,
-	}
+	s := &Shell{}
+	s.EnterRAWMode()
+	return s
 }
 
 func (s *Shell) Kill() {
-	// Restore the original terminal state
-	if err := term.Restore(int(os.Stdin.Fd()), s.originalTerminalState); err != nil {
-		panic(fmt.Sprintf("Error restoring terminal state: %v", err))
-	}
+	s.ExitRAWMode()
 	os.Exit(0)
 }
 
