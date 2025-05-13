@@ -5,5 +5,5 @@ This is my Go solution to the ["Build Your Own Shell" Challenge](https://app.cod
 This is a simple Unix shell built from scratch, which supports:
 - Basic commands like `echo`, `type`, `exit`
 - Parsing of the `PATH` environment variable to find exectuables to run
-- Navigation of the file system with `pwd` and `cd`
+- Navigation of the file system with `pwd` and `cd`, along with parsing of the `HOME` environment variable
 

@@ -19,11 +19,6 @@ func executeBinary(cmd string, args ...string) {
 }
 
 func DefaultHandler(args []string) {
-	if len(args) == 0 {
-		fmt.Println()
-		return
-	}
-
 	// Check for executable in path
 	cmd := args[0]
 	path := utils.IsExecutableInPath(cmd)

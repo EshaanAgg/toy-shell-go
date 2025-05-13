@@ -2,13 +2,15 @@ package cmd
 
 type CommandHandler func(args []string)
 
-var AllCommands = []string{
-	"exit",
-	"echo",
-	"type",
-	"pwd",
-	"cd",
+func init() {
+	// Initialize the list of all commands
+	AllCommands = make([]string, 0, len(HandlerMap))
+	for cmd := range HandlerMap {
+		AllCommands = append(AllCommands, cmd)
+	}
 }
+
+var AllCommands = []string{}
 
 var HandlerMap = map[string]CommandHandler{
 	"exit": HandleExit,
