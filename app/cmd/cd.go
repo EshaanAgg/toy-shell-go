@@ -21,7 +21,7 @@ func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 
 	err := os.Chdir(path)
 	if err != nil {
-		fmt.Fprintf(errFile, "cd: %s: %v\r\n", path, err)
+		fmt.Fprintf(errFile, "%v\r\n", err)
 		return
 	}
 }
