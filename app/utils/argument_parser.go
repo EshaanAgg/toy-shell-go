@@ -36,6 +36,8 @@ func (p *parser) expectDelimiter() error {
 	return nil
 }
 
+// addToken adds the current token to the list of tokens, only if
+// the current token is not empty. It also resets the current token.
 func (p *parser) addToken() {
 	if p.currentToken != "" {
 		p.tokens = append(p.tokens, p.currentToken)
@@ -86,7 +88,9 @@ func (p *parser) parse() []string {
 			p.quoted = &b
 		case '\'':
 			p.quoted = &b
-		case ' ', '\t', '\n', '\r':
+
+		// Only space and tabs are considered as delimiters for tokens
+		case ' ', '\t':
 			p.addToken()
 		default:
 			p.currentToken += string(b)
@@ -96,10 +100,10 @@ func (p *parser) parse() []string {
 
 // In single quote, all characters are part of the token.
 // Only a single quote can end the token.
+// New token should NOT BE created when the single quote is closed.
 func (p *parser) handleSingleQuote(b byte) {
 	if b == '\'' {
 		p.quoted = nil
-		p.addToken()
 	} else {
 		p.currentToken += string(b)
 	}
@@ -107,6 +111,7 @@ func (p *parser) handleSingleQuote(b byte) {
 
 // In double quotes, there is limited escaping.
 // The blackslash (\) can be used to escape (' " $ \n) bytes.
+// New token should NOT BE created when the double quote is closed.
 func (p *parser) handleDoubleQuote(b byte) {
 	if p.escapeNext {
 		switch b {
@@ -126,7 +131,6 @@ func (p *parser) handleDoubleQuote(b byte) {
 
 	case '"':
 		p.quoted = nil
-		p.addToken()
 
 	default:
 		p.currentToken += string(b)
