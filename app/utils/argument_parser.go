@@ -146,6 +146,9 @@ func (p *parser) handleDoubleQuote(b byte) error {
 	return nil
 }
 
+// GetTokens parses the input byte array and returns a slice of tokens.
+// It carefully handles quoted strings and escape characters, and returns the
+// final tokens that can be used to execute a command.
 func GetTokens(input []byte) ([]string, error) {
 	p := &parser{
 		input: input,

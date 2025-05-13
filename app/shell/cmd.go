@@ -5,23 +5,28 @@ import (
 	"os"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
+	"github.com/EshaanAgg/shell-go/app/utils"
 )
 
-func (s *Shell) ExecuteCommand(args []string) {
-	// Print a new line before executing the command
-	// This is so that the output of the command is not printed on the same line as the prompt
-	fmt.Print("\n")
+func (s *Shell) ExecuteCommand(line []byte) {
+	args, err := utils.GetTokens(line)
+	if err != nil {
+		fmt.Printf("Error parsing command: %v\r\n", err)
+		return
+	}
 
+	// Empty command, no need to execute
 	if len(args) == 0 {
 		return
 	}
 
-	command := args[0]
-	leftArgs := args[1:]
+	defaultOutput := os.Stdout
+	defaultError := os.Stderr
 
-	if handler, exists := cmd.HandlerMap[command]; exists {
-		handler(leftArgs, os.Stdout, os.Stderr)
+	command := args[0]
+	if handler, ok := cmd.HandlerMap[command]; ok {
+		handler(args[1:], defaultOutput, defaultError)
 	} else {
-		cmd.DefaultHandler(args, os.Stdout, os.Stderr)
+		cmd.DefaultHandler(args, defaultOutput, defaultError)
 	}
 }
