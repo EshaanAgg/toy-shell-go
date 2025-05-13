@@ -31,5 +31,5 @@ func HandleType(args []string, outFile *os.File, errFile *os.File) {
 	}
 
 	// Unrecognized
-	fmt.Fprintf(errFile, "%s: command not found\r\n", cmd)
+	fmt.Fprintf(errFile, "%s: not found\r\n", cmd)
 }
