@@ -27,6 +27,7 @@ func (s *Shell) defaultCommandHandler(args []string, outFile *os.File, errFile *
 		p.Run()
 
 		s.EnterRAWMode()
+		return
 	}
 
 	// Unrecognized
