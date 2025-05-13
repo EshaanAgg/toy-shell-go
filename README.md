@@ -6,6 +6,8 @@ This is a simple Unix shell built from scratch, which supports:
 - Basic commands like `echo`, `type`, `exit`
 - Parsing of the `PATH` environment variable to find exectuables to run
 - Navigation of the file system with `pwd` and `cd`, along with parsing of the `HOME` environment variable
+- Redirection of the standard output and error to files
+- Escaping of quotes, double quotes, and backslashes
 
 ## Working in Raw Mode
 
