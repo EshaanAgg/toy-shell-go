@@ -41,6 +41,11 @@ func IsExecutableInPath(cmd string) *string {
 	return nil
 }
 
+// GetAllExecutablesInPath returns a list of all the executable files in the
+// directories listed in the PATH environment variable. It ignores any
+// directories that cannot be read or do not contain any executable files.
+// The returned list does not contain duplicates.
+// The name of the executables is returned, not the full path.
 func GetAllExecutablesInPath() []string {
 	path := os.Getenv("PATH")
 	pathDirs := strings.SplitSeq(path, ":")
@@ -71,7 +76,7 @@ func GetAllExecutablesInPath() []string {
 				continue
 			}
 			if info.Mode()&EXECUTABLE_MASK != 0 {
-				executables = append(executables, fullPath)
+				executables = append(executables, name)
 			}
 		}
 	}
