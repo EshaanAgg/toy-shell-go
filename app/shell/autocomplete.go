@@ -1,6 +1,8 @@
 package shell
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
@@ -26,8 +28,15 @@ func (s *Shell) getMatchingCommands() []string {
 }
 
 func (s *Shell) printBell() {
-	s.putChar('\\')
-	s.putChar('a')
+	fmt.Fprintf(os.Stdout, "\a")
+}
+
+func (s *Shell) handleOneMatch(cmd string) {
+	// Print the leftover part of the command
+	for i := len(s.input); i < len(cmd); i++ {
+		s.putChar(cmd[i])
+	}
+	s.putChar(' ')
 }
 
 func (s *Shell) handleTabClick() {
@@ -38,11 +47,7 @@ func (s *Shell) handleTabClick() {
 		return
 	}
 
-	// Handle only the first match
-	matchedCmd := matches[0]
-	// Print the leftover part of the command
-	for i := len(s.input); i < len(matchedCmd); i++ {
-		s.putChar(matchedCmd[i])
+	if len(matches) == 1 {
+		s.handleOneMatch(matches[0])
 	}
-	s.putChar(' ')
 }
