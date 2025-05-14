@@ -40,6 +40,12 @@ func (s *Shell) Start() []byte {
 		default:
 			s.putChar(ch)
 		}
+
+		// Reset the state if the user has typed
+		// something other than TAB after multiple matches
+		if ch != KEY_TAB && s.hadMultipleMatched {
+			s.hadMultipleMatched = false
+		}
 	}
 }
 

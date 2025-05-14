@@ -12,6 +12,8 @@ type Shell struct {
 
 	input          []byte
 	cursorPosition int
+
+	hadMultipleMatched bool
 }
 
 func NewShell() *Shell {
