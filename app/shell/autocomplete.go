@@ -10,6 +10,20 @@ import (
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
 
+func hasPartialMatch(matchedCommands []string) bool {
+	slices.Sort(matchedCommands)
+	allPrefix := true
+
+	for i := 1; i < len(matchedCommands); i++ {
+		if !strings.HasPrefix(matchedCommands[i], matchedCommands[i-1]) {
+			allPrefix = false
+			break
+		}
+	}
+
+	return allPrefix
+}
+
 func (s *Shell) getMatchingCommands() []string {
 	// Get a unique list of all commands from cmd package and executables in PATH
 	allCommands := make([]string, 0)
@@ -33,22 +47,6 @@ func (s *Shell) getMatchingCommands() []string {
 		return matchedCommands
 	}
 
-	// Sort the matched commands and see if they are all
-	// the prefix of each other. Then we should only return the
-	// first one.
-	slices.Sort(matchedCommands)
-	allPrefix := true
-	for i := 1; i < len(matchedCommands); i++ {
-		if !strings.HasPrefix(matchedCommands[i], matchedCommands[i-1]) {
-			allPrefix = false
-			break
-		}
-	}
-
-	if allPrefix {
-		return []string{matchedCommands[0]}
-	}
-
 	return matchedCommands
 }
 
@@ -56,12 +54,14 @@ func (s *Shell) printBell() {
 	fmt.Fprintf(os.Stdout, "\a")
 }
 
-func (s *Shell) handleOneMatch(cmd string) {
+func (s *Shell) handleOneMatch(cmd string, putSpace bool) {
 	// Print the leftover part of the command
 	for i := len(s.input); i < len(cmd); i++ {
 		s.putChar(cmd[i])
 	}
-	s.putChar(' ')
+	if putSpace {
+		s.putChar(' ')
+	}
 }
 
 func (s *Shell) handleMultipleMatches(matches []string) {
@@ -93,7 +93,13 @@ func (s *Shell) handleTabClick() {
 	}
 
 	if len(matches) == 1 {
-		s.handleOneMatch(matches[0])
+		s.handleOneMatch(matches[0], true)
+	}
+
+	// If there are multiple matches, all prefix
+	// of each other, then print the common prefix
+	if hasPartialMatch(matches) {
+		s.handleOneMatch(matches[0], false)
 	}
 
 	s.handleMultipleMatches(matches)
