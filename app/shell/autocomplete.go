@@ -3,6 +3,7 @@ package shell
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
@@ -13,8 +14,12 @@ func (s *Shell) getMatchingCommands() []string {
 	allCommands := make([]string, 0)
 
 	// Add all the commands from the cmd package and PATH
-	allCommands = append(allCommands, cmd.AllCommands...)
 	allCommands = append(allCommands, utils.GetAllExecutablesInPath()...)
+	for _, cmd := range cmd.AllCommands {
+		if !slices.Contains(allCommands, cmd) {
+			allCommands = append(allCommands, cmd)
+		}
+	}
 
 	matchedCommands := make([]string, 0)
 	curInput := string(s.input)
