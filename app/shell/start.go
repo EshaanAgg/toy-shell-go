@@ -25,10 +25,34 @@ func (s *Shell) Start() []byte {
 			s.resetState()
 			s.putPrompt()
 
+		case KEY_BACKSPACE:
+			s.handleBackspace()
+
 		default:
 			s.input = append(s.input, ch)
 			s.cursorPosition++
 			fmt.Printf("%c", ch)
 		}
+	}
+}
+
+func (s *Shell) handleBackspace() {
+	if s.cursorPosition == 0 {
+		return
+	}
+
+	// Update the internal state of the shell
+	s.cursorPosition--
+	s.input = append(s.input[:s.cursorPosition], s.input[s.cursorPosition+1:]...)
+
+	// Redraw the rest of the input from the cursor position
+	// Add a space to overwrite the trailing character
+	toPrintAgain := string(s.input[s.cursorPosition:]) + " "
+
+	fmt.Print(MOVE_CURSOR_LEFT)
+	fmt.Print(toPrintAgain)
+	// Move cursor back to its proper position
+	for _ = range len(toPrintAgain) {
+		fmt.Print(MOVE_CURSOR_LEFT)
 	}
 }

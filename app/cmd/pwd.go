@@ -6,8 +6,6 @@ import (
 )
 
 func HandlePWD(args []string, outFile *os.File, errFile *os.File) {
-	defer cleanup(outFile, errFile)
-
 	if len(args) != 0 {
 		fmt.Fprintf(errFile, "usage: pwd, received unexpected args: %v\r\n", args)
 		return

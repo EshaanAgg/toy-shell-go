@@ -3,10 +3,17 @@ package shell
 import (
 	"fmt"
 	"os"
+	"slices"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
+
+var standardOSFiles = []*os.File{
+	os.Stdin,
+	os.Stdout,
+	os.Stderr,
+}
 
 // Represents a single command that can be executed
 // in the shell. It should have no redirection or piping.
@@ -50,5 +57,16 @@ func (c *command) execute(s *Shell) {
 		handler(c.args[1:], c.outFile, c.errFile)
 	} else {
 		s.defaultCommandHandler(c.args, c.outFile, c.errFile)
+	}
+
+	c.cleanup()
+}
+
+func (c *command) cleanup() {
+	if !slices.Contains(standardOSFiles, c.outFile) {
+		c.outFile.Close()
+	}
+	if !slices.Contains(standardOSFiles, c.errFile) {
+		c.errFile.Close()
 	}
 }

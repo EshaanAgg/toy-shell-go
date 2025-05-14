@@ -8,8 +8,6 @@ import (
 const HOME_DIRECTORY_MARKER = "~"
 
 func HandleCD(args []string, outFile *os.File, errFile *os.File) {
-	defer cleanup(outFile, errFile)
-
 	if len(args) != 1 {
 		fmt.Fprintf(errFile, "usage: cd <path-to-new-dir>, received unexpected args: %v\r\n", args)
 		return
