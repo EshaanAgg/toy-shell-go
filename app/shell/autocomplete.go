@@ -76,9 +76,8 @@ func (s *Shell) handleMultipleMatches(matches []string) {
 
 	// Go to next line and print the matches
 	fmt.Fprintf(os.Stdout, "\r\n")
-	for _, match := range matches {
-		fmt.Fprintf(os.Stdout, "%s ", match)
-	}
+	fmt.Fprintf(os.Stdout, strings.Join(matches, "  "))
+
 	// Go to the next line, and print the prompt & the input
 	fmt.Fprintf(os.Stdout, "\r\n")
 	s.putPrompt()
