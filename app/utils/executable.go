@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -38,4 +39,42 @@ func IsExecutableInPath(cmd string) *string {
 	}
 
 	return nil
+}
+
+func GetAllExecutablesInPath() []string {
+	path := os.Getenv("PATH")
+	pathDirs := strings.SplitSeq(path, ":")
+
+	executables := make([]string, 0)
+
+	for dir := range pathDirs {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+
+		for _, entry := range entries {
+			name := entry.Name()
+
+			// Skip if the entry is a directory or if it is already in the list of executables
+			if entry.IsDir() {
+				continue
+			}
+			if slices.Contains(executables, name) {
+				continue
+			}
+
+			// Check if we have the permission to execute
+			fullPath := filepath.Join(dir, name)
+			info, err := os.Stat(fullPath)
+			if err != nil {
+				continue
+			}
+			if info.Mode()&EXECUTABLE_MASK != 0 {
+				executables = append(executables, fullPath)
+			}
+		}
+	}
+
+	return executables
 }

@@ -7,6 +7,12 @@ func (s *Shell) resetState() {
 	s.cursorPosition = 0
 }
 
+func (s *Shell) putChar(ch byte) {
+	s.input = append(s.input, ch)
+	s.cursorPosition++
+	fmt.Printf("%c", ch)
+}
+
 func (s *Shell) Start() []byte {
 	s.putPrompt()
 
@@ -28,10 +34,11 @@ func (s *Shell) Start() []byte {
 		case KEY_BACKSPACE:
 			s.handleBackspace()
 
+		case KEY_TAB:
+			s.handleTabClick()
+
 		default:
-			s.input = append(s.input, ch)
-			s.cursorPosition++
-			fmt.Printf("%c", ch)
+			s.putChar(ch)
 		}
 	}
 }
