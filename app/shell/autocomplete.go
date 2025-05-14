@@ -44,4 +44,5 @@ func (s *Shell) handleTabClick() {
 	for i := len(s.input); i < len(matchedCmd); i++ {
 		s.putChar(matchedCmd[i])
 	}
+	s.putChar(' ')
 }
