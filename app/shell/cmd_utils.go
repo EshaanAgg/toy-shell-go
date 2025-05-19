@@ -25,13 +25,14 @@ type command struct {
 }
 
 // Executes the command in using a process on the OS.
-func (c *command) executeOnOS() error {
+func (c *command) executeOnOS() {
 	cmd := c.args[0]
 
 	// Check if the command is in the PATH
 	path := utils.IsExecutableInPath(cmd)
 	if path == nil {
-		return fmt.Errorf("%s: command not found", cmd)
+		fmt.Fprintf(c.errFile, "%s: command not found\r\n", cmd)
+		return
 	}
 
 	p := exec.Command(c.args[0], c.args[1:]...)
@@ -39,12 +40,8 @@ func (c *command) executeOnOS() error {
 	p.Stderr = c.errFile
 	p.Stdin = c.inFile
 
-	if err := p.Run(); err != nil {
-		return fmt.Errorf("error executing command: %v", err)
-	}
-
+	p.Run()
 	c.cleanup()
-	return nil
 }
 
 func (c *command) cleanup() {

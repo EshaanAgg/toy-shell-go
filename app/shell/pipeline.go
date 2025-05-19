@@ -11,6 +11,10 @@ type pipelineCommand struct {
 	commands []*command
 }
 
+// newPipelineCommand creates a new pipeline command from the given line.
+// It splits the line by the pipe character and creates a command for each
+// part. All of these commands are then connected by pipes, and executed
+// directly on the OS.
 func newPipelineCommand(line []byte) (*pipelineCommand, error) {
 	parts := bytes.Split(line, []byte("|"))
 
@@ -49,9 +53,7 @@ func (p *pipelineCommand) execute(s *Shell) {
 	for _, cmd := range p.commands {
 		go func(c *command) {
 			defer wg.Done()
-			if err := c.executeOnOS(); err != nil {
-				fmt.Fprintf(c.errFile, "%s\r\n", err.Error())
-			}
+			c.executeOnOS()
 		}(cmd)
 	}
 

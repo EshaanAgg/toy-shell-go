@@ -40,13 +40,13 @@ func (c *command) execute(s *Shell) {
 
 	command := c.args[0]
 	if handler, ok := cmd.HandlerMap[command]; ok {
+		// Found a handler registered for the command
 		handler(c.args[1:], c.outFile, c.errFile)
 		c.cleanup()
 	} else {
+		// Execute the command on the OS after entering raw mode
 		s.ExitRAWMode()
-		if err := c.executeOnOS(); err != nil {
-			fmt.Fprintf(c.errFile, "%s\r\n", err.Error())
-		}
+		c.executeOnOS()
 		s.EnterRAWMode()
 	}
 }
