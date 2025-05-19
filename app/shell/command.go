@@ -52,9 +52,7 @@ func newCommand(line []byte) (*command, error) {
 // execute runs the command on the shell. If the command is an inbuilt
 // command, it will be executed using the handler map. If the command
 // is not found in the handler map, it will be executed using the OS.
-// shouldChangeMode controls whether the shell should change to raw mode
-// when executing the command on the OS.
-func (c *command) execute(s *Shell, shouldChangeMode bool) {
+func (c *command) execute(s *Shell, inPipeline bool) {
 	// Empty command, no need to execute
 	if len(c.args) == 0 {
 		return
@@ -64,9 +62,15 @@ func (c *command) execute(s *Shell, shouldChangeMode bool) {
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		// Found a handler registered for the command
 		handler(c.args[1:], c.outFile, c.errFile)
+
+		if inPipeline {
+			fmt.Fprint(c.outFile, "\n")
+		} else {
+			fmt.Fprintf(c.outFile, "\r\n")
+		}
 		c.cleanup()
 	} else {
-		if shouldChangeMode {
+		if !inPipeline {
 			s.ExitRAWMode()
 			defer s.EnterRAWMode()
 		}
@@ -75,20 +79,21 @@ func (c *command) execute(s *Shell, shouldChangeMode bool) {
 }
 
 // Executes the command in using a process on the OS.
+// The shell is assumed NOT to be in RAW mode when this is called.
 func (c *command) executeOnOS() {
 	cmd := c.args[0]
 
 	// Check if the command is in the PATH
 	path := utils.IsExecutableInPath(cmd)
 	if path == nil {
-		fmt.Fprintf(c.errFile, "%s: command not found\r\n", cmd)
+		fmt.Fprintf(c.errFile, "%s: command not found\n", cmd)
 		return
 	}
 
 	p := exec.Command(c.args[0], c.args[1:]...)
+	p.Stdin = c.inFile
 	p.Stdout = c.outFile
 	p.Stderr = c.errFile
-	p.Stdin = c.inFile
 
 	p.Run()
 	c.cleanup()

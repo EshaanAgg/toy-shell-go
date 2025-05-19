@@ -54,7 +54,7 @@ func (s *Shell) ExecuteCommand(line []byte) {
 		fmt.Printf("Error creating command: %v\r\n", err)
 		return
 	}
-	cmd.execute(s, true)
+	cmd.execute(s, false)
 }
 
 func (s *Shell) ExecutePipelineCommand(line []byte) {

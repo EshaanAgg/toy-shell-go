@@ -9,7 +9,7 @@ const HOME_DIRECTORY_MARKER = "~"
 
 func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 	if len(args) != 1 {
-		fmt.Fprintf(errFile, "usage: cd <path-to-new-dir>, received unexpected args: %v\r\n", args)
+		fmt.Fprintf(errFile, "usage: cd <path-to-new-dir>, received unexpected args: %v", args)
 		return
 	}
 
@@ -21,13 +21,13 @@ func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 
 	// Check if the directory exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		fmt.Fprintf(errFile, "cd: %s: No such file or directory\r\n", path)
+		fmt.Fprintf(errFile, "cd: %s: No such file or directory", path)
 		return
 	}
 
 	err := os.Chdir(path)
 	if err != nil {
-		fmt.Fprintf(errFile, "cd: %s: %v\r\n", path, err)
+		fmt.Fprintf(errFile, "cd: %s: %v", path, err)
 		return
 	}
 }

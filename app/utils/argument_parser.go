@@ -145,7 +145,7 @@ func (p *parser) handleDoubleQuote(b byte) {
 // final tokens that can be used to execute a command.
 func GetTokens(input []byte) ([]string, error) {
 	p := &parser{
-		input: bytes.Trim(input, " "),
+		input: bytes.TrimSpace(input),
 	}
 
 	toks := p.parse()

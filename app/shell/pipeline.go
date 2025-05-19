@@ -49,7 +49,7 @@ func (p *pipelineCommand) execute(s *Shell) {
 	for _, cmd := range p.commands {
 		go func(c *command) {
 			defer wg.Done()
-			c.execute(s, false)
+			c.execute(s, true)
 		}(cmd)
 	}
 

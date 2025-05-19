@@ -8,10 +8,10 @@ import (
 
 func HandleEcho(args []string, outFile *os.File, errFile *os.File) {
 	if len(args) == 0 {
-		fmt.Fprintf(outFile, "usage: echo <message>, received unexpected args: %v\r\n", args)
+		fmt.Fprintf(outFile, "usage: echo <message>, received unexpected args: %v", args)
 		return
 	}
 
 	message := strings.Join(args, " ")
-	fmt.Fprintf(outFile, "%s\r\n", message)
+	fmt.Fprintf(outFile, "%s", message)
 }
