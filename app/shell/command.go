@@ -3,10 +3,27 @@ package shell
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"slices"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
+
+var standardOSFiles = []*os.File{
+	os.Stdin,
+	os.Stdout,
+	os.Stderr,
+}
+
+// Represents a single command that can be executed
+// in the shell. It should have no redirection or piping.
+type command struct {
+	args    []string
+	inFile  *os.File
+	outFile *os.File
+	errFile *os.File
+}
 
 // newCommand creates a new command from the given line.
 // It parses the line into arguments and checks for
@@ -32,7 +49,12 @@ func newCommand(line []byte) (*command, error) {
 	return cmd, nil
 }
 
-func (c *command) execute(s *Shell) {
+// execute runs the command on the shell. If the command is an inbuilt
+// command, it will be executed using the handler map. If the command
+// is not found in the handler map, it will be executed using the OS.
+// shouldChangeMode controls whether the shell should change to raw mode
+// when executing the command on the OS.
+func (c *command) execute(s *Shell, shouldChangeMode bool) {
 	// Empty command, no need to execute
 	if len(c.args) == 0 {
 		return
@@ -44,9 +66,42 @@ func (c *command) execute(s *Shell) {
 		handler(c.args[1:], c.outFile, c.errFile)
 		c.cleanup()
 	} else {
-		// Execute the command on the OS after entering raw mode
-		s.ExitRAWMode()
+		if shouldChangeMode {
+			s.ExitRAWMode()
+			defer s.EnterRAWMode()
+		}
 		c.executeOnOS()
-		s.EnterRAWMode()
+	}
+}
+
+// Executes the command in using a process on the OS.
+func (c *command) executeOnOS() {
+	cmd := c.args[0]
+
+	// Check if the command is in the PATH
+	path := utils.IsExecutableInPath(cmd)
+	if path == nil {
+		fmt.Fprintf(c.errFile, "%s: command not found\r\n", cmd)
+		return
+	}
+
+	p := exec.Command(c.args[0], c.args[1:]...)
+	p.Stdout = c.outFile
+	p.Stderr = c.errFile
+	p.Stdin = c.inFile
+
+	p.Run()
+	c.cleanup()
+}
+
+func (c *command) cleanup() {
+	if !slices.Contains(standardOSFiles, c.inFile) {
+		c.inFile.Close()
+	}
+	if !slices.Contains(standardOSFiles, c.outFile) {
+		c.outFile.Close()
+	}
+	if !slices.Contains(standardOSFiles, c.errFile) {
+		c.errFile.Close()
 	}
 }
