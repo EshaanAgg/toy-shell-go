@@ -8,6 +8,9 @@ This is a simple Unix shell built from scratch, which supports:
 - Navigation of the file system with `pwd` and `cd`, along with parsing of the `HOME` environment variable
 - Redirection of the standard output and error to files
 - Escaping of quotes, double quotes, and backslashes
+- Redirection of the output from `STDOUT` and `STDERR` to files, in both `append` and `overwrite` modes
+- Autocompletion of commands 
+- Multiple pipelines with both built-in commands and executables
 
 ## Working in Raw Mode
 

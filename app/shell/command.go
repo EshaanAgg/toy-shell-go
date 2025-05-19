@@ -64,8 +64,11 @@ func (c *command) execute(s *Shell, inPipeline bool) {
 		hadOutput := handler(c.args[1:], c.outFile, c.errFile)
 
 		if inPipeline {
+			// If we are in a pipeline, then the shell is not in RAW mode
+			// We can print a new line before the prompt
 			fmt.Fprint(c.outFile, "\n")
 		} else if hadOutput {
+			// We must move the cursor to the next line and reset it's position
 			fmt.Fprintf(c.outFile, "\r\n")
 		}
 		c.cleanup()
