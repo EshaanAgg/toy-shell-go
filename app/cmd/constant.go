@@ -2,7 +2,9 @@ package cmd
 
 import "os"
 
-type CommandHandler func(args []string, outFile *os.File, errFile *os.File)
+// CommandHandler is a function type that handles a command.
+// It returns true if the executed command printed something to the output or error file, and false otherwise.
+type CommandHandler func(args []string, outFile *os.File, errFile *os.File) bool
 
 func init() {
 	// Initialize the list of all commands

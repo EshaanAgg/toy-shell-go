@@ -61,11 +61,11 @@ func (c *command) execute(s *Shell, inPipeline bool) {
 	command := c.args[0]
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		// Found a handler registered for the command
-		handler(c.args[1:], c.outFile, c.errFile)
+		hadOutput := handler(c.args[1:], c.outFile, c.errFile)
 
 		if inPipeline {
 			fmt.Fprint(c.outFile, "\n")
-		} else {
+		} else if hadOutput {
 			fmt.Fprintf(c.outFile, "\r\n")
 		}
 		c.cleanup()

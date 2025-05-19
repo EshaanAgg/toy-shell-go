@@ -7,10 +7,10 @@ import (
 
 const HOME_DIRECTORY_MARKER = "~"
 
-func HandleCD(args []string, outFile *os.File, errFile *os.File) {
+func HandleCD(args []string, outFile *os.File, errFile *os.File) bool {
 	if len(args) != 1 {
 		fmt.Fprintf(errFile, "usage: cd <path-to-new-dir>, received unexpected args: %v", args)
-		return
+		return true
 	}
 
 	// Get the path to change the directory to
@@ -22,12 +22,14 @@ func HandleCD(args []string, outFile *os.File, errFile *os.File) {
 	// Check if the directory exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		fmt.Fprintf(errFile, "cd: %s: No such file or directory", path)
-		return
+		return true
 	}
 
 	err := os.Chdir(path)
 	if err != nil {
 		fmt.Fprintf(errFile, "cd: %s: %v", path, err)
-		return
+		return true
 	}
+
+	return false
 }
