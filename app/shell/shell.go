@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 
@@ -43,10 +44,24 @@ func (s *Shell) putPrompt() {
 }
 
 func (s *Shell) ExecuteCommand(line []byte) {
+	if bytes.Contains(line, []byte("|")) {
+		s.ExecutePipelineCommand(line)
+		return
+	}
+
 	cmd, err := newCommand(line)
 	if err != nil {
 		fmt.Printf("Error creating command: %v\r\n", err)
 		return
 	}
 	cmd.execute(s)
+}
+
+func (s *Shell) ExecutePipelineCommand(line []byte) {
+	pipelineCmd, err := newPipelineCommand(line)
+	if err != nil {
+		fmt.Printf("Error creating pipeline command: %v\r\n", err)
+		return
+	}
+	pipelineCmd.execute(s)
 }

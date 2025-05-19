@@ -4,32 +4,45 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	"github.com/EshaanAgg/shell-go/app/utils"
+	"slices"
 )
 
-// defaultCommandHandler is the default command handler for unrecognized commands.
-// This is defined here and not in the "cmd" package because it needs access to the
-// shell's environment and state.
-func (s *Shell) defaultCommandHandler(args []string, outFile *os.File, errFile *os.File) {
-	// Check for executable in path
-	cmd := args[0]
-	path := utils.IsExecutableInPath(cmd)
+var standardOSFiles = []*os.File{
+	os.Stdin,
+	os.Stdout,
+	os.Stderr,
+}
 
-	// Run the exectuable
-	if path != nil {
-		s.ExitRAWMode()
+// Represents a single command that can be executed
+// in the shell. It should have no redirection or piping.
+type command struct {
+	args    []string
+	inFile  *os.File
+	outFile *os.File
+	errFile *os.File
+}
 
-		p := exec.Command(cmd, args[1:]...)
-		p.Stdout = outFile
-		p.Stderr = errFile
-		p.Stdin = os.Stdin
-		p.Run()
+// Executes the command in using a process on the OS.
+func (c *command) executeOnOS() error {
+	p := exec.Command(c.args[0], c.args[1:]...)
+	p.Stdout = c.outFile
+	p.Stderr = c.errFile
+	p.Stdin = c.inFile
 
-		s.EnterRAWMode()
-		return
+	if err := p.Run(); err != nil {
+		return fmt.Errorf("error executing command: %v", err)
 	}
+	return nil
+}
 
-	// Unrecognized
-	fmt.Fprintf(errFile, "%s: command not found\r\n", cmd)
+func (c *command) cleanup() {
+	if !slices.Contains(standardOSFiles, c.inFile) {
+		c.inFile.Close()
+	}
+	if !slices.Contains(standardOSFiles, c.outFile) {
+		c.outFile.Close()
+	}
+	if !slices.Contains(standardOSFiles, c.errFile) {
+		c.errFile.Close()
+	}
 }

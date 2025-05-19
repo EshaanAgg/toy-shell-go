@@ -9,7 +9,7 @@ import (
 
 func (s *Shell) EnterRAWMode() {
 	if s.originalTerminalState != nil {
-		panic("Already in raw mode")
+		panic("Terminal is already in raw mode")
 	}
 
 	orgTerm, err := term.MakeRaw(int(os.Stdin.Fd()))
@@ -21,7 +21,7 @@ func (s *Shell) EnterRAWMode() {
 
 func (s *Shell) ExitRAWMode() {
 	if s.originalTerminalState == nil {
-		panic("Not in raw mode")
+		panic("Terminal is not in raw mode")
 	}
 
 	if err := term.Restore(int(os.Stdin.Fd()), s.originalTerminalState); err != nil {

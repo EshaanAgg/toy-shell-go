@@ -3,25 +3,10 @@ package shell
 import (
 	"fmt"
 	"os"
-	"slices"
 
 	"github.com/EshaanAgg/shell-go/app/cmd"
 	"github.com/EshaanAgg/shell-go/app/utils"
 )
-
-var standardOSFiles = []*os.File{
-	os.Stdin,
-	os.Stdout,
-	os.Stderr,
-}
-
-// Represents a single command that can be executed
-// in the shell. It should have no redirection or piping.
-type command struct {
-	args    []string
-	outFile *os.File
-	errFile *os.File
-}
 
 // newCommand creates a new command from the given line.
 // It parses the line into arguments and checks for
@@ -56,17 +41,16 @@ func (c *command) execute(s *Shell) {
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		handler(c.args[1:], c.outFile, c.errFile)
 	} else {
-		s.defaultCommandHandler(c.args, c.outFile, c.errFile)
+		path := utils.IsExecutableInPath(command)
+		if path == nil {
+			fmt.Fprintf(c.errFile, "%s: command not found\r\n", c.args[0])
+			return
+		}
+
+		s.ExitRAWMode()
+		c.executeOnOS()
+		s.EnterRAWMode()
 	}
 
 	c.cleanup()
-}
-
-func (c *command) cleanup() {
-	if !slices.Contains(standardOSFiles, c.outFile) {
-		c.outFile.Close()
-	}
-	if !slices.Contains(standardOSFiles, c.errFile) {
-		c.errFile.Close()
-	}
 }
