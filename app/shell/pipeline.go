@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"sync"
 )
 
 type pipelineCommand struct {
@@ -14,13 +15,13 @@ func newPipelineCommand(line []byte) (*pipelineCommand, error) {
 	parts := bytes.Split(line, []byte("|"))
 
 	// Create commands
-	commands := make([]*command, len(parts))
+	commands := make([]*command, 0, len(parts))
 	for i, part := range parts {
 		cmd, err := newCommand(part)
 		if err != nil {
 			return nil, fmt.Errorf("error creating command[%d]: %v", i, err)
 		}
-		commands[i] = cmd
+		commands = append(commands, cmd)
 	}
 
 	// Map the output of one command to the input of the next
@@ -39,5 +40,21 @@ func newPipelineCommand(line []byte) (*pipelineCommand, error) {
 }
 
 func (p *pipelineCommand) execute(s *Shell) {
+	wg := sync.WaitGroup{}
+	wg.Add(len(p.commands))
 
+	s.ExitRAWMode()
+
+	// Execute all commands in parallel
+	for _, cmd := range p.commands {
+		go func(c *command) {
+			defer wg.Done()
+			if err := c.executeOnOS(); err != nil {
+				fmt.Fprintf(c.errFile, "%s\r\n", err.Error())
+			}
+		}(cmd)
+	}
+
+	wg.Wait()
+	s.EnterRAWMode()
 }

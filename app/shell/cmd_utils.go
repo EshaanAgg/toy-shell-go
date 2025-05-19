@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+
+	"github.com/EshaanAgg/shell-go/app/utils"
 )
 
 var standardOSFiles = []*os.File{
@@ -24,6 +26,14 @@ type command struct {
 
 // Executes the command in using a process on the OS.
 func (c *command) executeOnOS() error {
+	cmd := c.args[0]
+
+	// Check if the command is in the PATH
+	path := utils.IsExecutableInPath(cmd)
+	if path == nil {
+		return fmt.Errorf("%s: command not found", cmd)
+	}
+
 	p := exec.Command(c.args[0], c.args[1:]...)
 	p.Stdout = c.outFile
 	p.Stderr = c.errFile
@@ -32,6 +42,8 @@ func (c *command) executeOnOS() error {
 	if err := p.Run(); err != nil {
 		return fmt.Errorf("error executing command: %v", err)
 	}
+
+	c.cleanup()
 	return nil
 }
 

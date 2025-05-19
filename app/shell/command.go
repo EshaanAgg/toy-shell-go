@@ -23,6 +23,7 @@ func newCommand(line []byte) (*command, error) {
 		args:    args,
 		outFile: os.Stdout,
 		errFile: os.Stderr,
+		inFile:  os.Stdin,
 	}
 	if err := cmd.checkForRedirection(); err != nil {
 		return nil, fmt.Errorf("redirection error: %v", err)
@@ -40,17 +41,12 @@ func (c *command) execute(s *Shell) {
 	command := c.args[0]
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		handler(c.args[1:], c.outFile, c.errFile)
+		c.cleanup()
 	} else {
-		path := utils.IsExecutableInPath(command)
-		if path == nil {
-			fmt.Fprintf(c.errFile, "%s: command not found\r\n", c.args[0])
-			return
-		}
-
 		s.ExitRAWMode()
-		c.executeOnOS()
+		if err := c.executeOnOS(); err != nil {
+			fmt.Fprintf(c.errFile, "%s\r\n", err.Error())
+		}
 		s.EnterRAWMode()
 	}
-
-	c.cleanup()
 }

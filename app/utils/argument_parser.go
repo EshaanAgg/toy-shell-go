@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 type parser struct {
 	idx   int
@@ -142,7 +145,7 @@ func (p *parser) handleDoubleQuote(b byte) {
 // final tokens that can be used to execute a command.
 func GetTokens(input []byte) ([]string, error) {
 	p := &parser{
-		input: input,
+		input: bytes.Trim(input, " \t\n\r"),
 	}
 
 	toks := p.parse()
