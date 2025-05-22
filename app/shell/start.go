@@ -1,6 +1,9 @@
 package shell
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func (s *Shell) resetState() {
 	s.input = nil
@@ -36,11 +39,19 @@ func (s *Shell) Start() []byte {
 		case KEY_BACKSPACE:
 			s.handleBackspace()
 
-		case KEY_UP_ARROW:
-			s.handleUpArrowPress()
+		case KEY_ESC:
+			// Read 2 more bytes
+			var seq [2]byte
+			os.Stdin.Read(seq[:])
 
-		case KEY_DOWN_ARROW:
-			s.hanldeDownArrowPress()
+			if seq[0] == '[' {
+				switch seq[1] {
+				case 'A':
+					s.handleUpArrowPress()
+				case 'B':
+					s.hanldeDownArrowPress()
+				}
+			}
 
 		case KEY_TAB:
 			s.handleTabClick()
