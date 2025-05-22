@@ -11,6 +11,7 @@ This is a simple Unix shell built from scratch, which supports:
 - Redirection of the output from `STDOUT` and `STDERR` to files, in both `append` and `overwrite` modes
 - Autocompletion of commands 
 - Multiple pipelines with both built-in commands and executables
+- History of commands, with the ability to navigate through the history using the up and down arrow keys
 
 ## Working in Raw Mode
 
