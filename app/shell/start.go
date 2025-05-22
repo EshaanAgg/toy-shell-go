@@ -27,6 +27,7 @@ func (s *Shell) Start() []byte {
 		case KEY_ENTER, KEY_NEWLINE:
 			fmt.Printf("\r\n")
 			s.history = append(s.history, string(s.input))
+			s.curHistoryIdx = -1
 			s.ExecuteCommand(s.input)
 
 			s.resetState()
@@ -34,6 +35,12 @@ func (s *Shell) Start() []byte {
 
 		case KEY_BACKSPACE:
 			s.handleBackspace()
+
+		case KEY_UP_ARROW:
+			s.handleUpArrowPress()
+
+		case KEY_DOWN_ARROW:
+			s.hanldeDownArrowPress()
 
 		case KEY_TAB:
 			s.handleTabClick()
