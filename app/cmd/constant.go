@@ -13,6 +13,9 @@ func init() {
 	for cmd := range HandlerMap {
 		AllCommands = append(AllCommands, cmd)
 	}
+
+	// Manually register the history command
+	AllCommands = append(AllCommands, "history")
 }
 
 var AllCommands = []string{}

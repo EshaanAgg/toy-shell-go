@@ -26,6 +26,7 @@ func (s *Shell) Start() []byte {
 
 		case KEY_ENTER, KEY_NEWLINE:
 			fmt.Printf("\r\n")
+			s.history = append(s.history, string(s.input))
 			s.ExecuteCommand(s.input)
 
 			s.resetState()

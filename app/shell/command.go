@@ -72,6 +72,8 @@ func (c *command) execute(s *Shell, inPipeline bool) {
 			fmt.Fprintf(c.outFile, "\r\n")
 		}
 		c.cleanup()
+	} else if command == "history" {
+		c.handleHistory(s)
 	} else {
 		if !inPipeline {
 			s.ExitRAWMode()

@@ -13,6 +13,7 @@ type Shell struct {
 
 	input          []byte
 	cursorPosition int
+	history        []string
 
 	hadMultipleMatched bool
 }
