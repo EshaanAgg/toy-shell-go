@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// Handler for the history command
 func (c *command) handleHistory(s *Shell) {
 	startIdx := 0
 	if len(c.args) > 1 {
@@ -17,17 +18,19 @@ func (c *command) handleHistory(s *Shell) {
 		startIdx = len(s.history) - cmdCnt
 	}
 
-	for i := startIdx; i < len(s.history); i++ {
-		fmt.Fprintf(c.outFile, "\t%d %s\r\n", i+1, s.history[i])
+	for i, cmd := range s.history[startIdx:] {
+		fmt.Fprintf(c.outFile, "\t%d %s\r\n", i+1, cmd)
 	}
 }
 
+// Clear's the current line in the shell
 func (s *Shell) clearLine() {
 	fmt.Printf("\r%s", MOVE_CURSOR_LEFT)
 	fmt.Print(CLEAR_LINE)
 	fmt.Print(MOVE_CURSOR_LEFT)
 }
 
+// Set's the current command to from the history
 func (s *Shell) putFromHistory() {
 	if s.curHistoryIdx == -1 || s.curHistoryIdx >= len(s.history) {
 		return

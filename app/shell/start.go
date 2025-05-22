@@ -46,9 +46,9 @@ func (s *Shell) Start() []byte {
 
 			if seq[0] == '[' {
 				switch seq[1] {
-				case 'A':
+				case 'A': // Up arrow
 					s.handleUpArrowPress()
-				case 'B':
+				case 'B': // Down arrow
 					s.hanldeDownArrowPress()
 				}
 			}
