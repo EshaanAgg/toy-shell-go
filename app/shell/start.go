@@ -49,7 +49,7 @@ func (s *Shell) Start() []byte {
 				case 'A': // Up arrow
 					s.handleUpArrowPress()
 				case 'B': // Down arrow
-					s.hanldeDownArrowPress()
+					s.handleDownArrowPress()
 				}
 			}
 

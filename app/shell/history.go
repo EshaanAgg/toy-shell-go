@@ -51,7 +51,7 @@ func (s *Shell) handleUpArrowPress() {
 	s.putFromHistory()
 }
 
-func (s *Shell) hanldeDownArrowPress() {
+func (s *Shell) handleDownArrowPress() {
 	if s.curHistoryIdx == -1 {
 		return
 	}
