@@ -17,6 +17,7 @@ type Shell struct {
 	history             []string
 	curHistoryIdx       int
 	lastSavedHistoryIdx int
+	histFile            string
 
 	hadMultipleMatched bool
 }
@@ -25,7 +26,16 @@ func NewShell() *Shell {
 	s := &Shell{
 		curHistoryIdx:       -1,
 		lastSavedHistoryIdx: -1,
+		histFile:            os.Getenv("HISTFILE"),
 	}
+
+	// Load history from HISTFILE if it exists
+	if s.histFile != "" {
+		if err := s.loadHistory(s.histFile); err != nil {
+			fmt.Printf("Error loading history from %s: %v\r\n", s.histFile, err)
+		}
+	}
+
 	s.EnterRAWMode()
 	return s
 }

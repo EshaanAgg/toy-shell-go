@@ -59,6 +59,14 @@ func (c *command) execute(s *Shell, inPipeline bool) {
 	}
 
 	command := c.args[0]
+	// If the command is "exit", save the history before delegating to the handler
+	if command == "exit" && s.histFile != "" {
+		if err := s.saveHistory(os.Getenv("HISTFILE")); err != nil {
+			fmt.Fprintf(c.errFile, "Error saving history: %v\n", err)
+			return
+		}
+	}
+
 	if handler, ok := cmd.HandlerMap[command]; ok {
 		// Found a handler registered for the command
 		hadOutput := handler(c.args[1:], c.outFile, c.errFile)

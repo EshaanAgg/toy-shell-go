@@ -22,6 +22,7 @@ func (s *Shell) loadHistory(filePath string) error {
 	if len(s.history) > 0 && s.history[len(s.history)-1] == "" {
 		s.history = s.history[:len(s.history)-1]
 	}
+	s.lastSavedHistoryIdx = len(s.history) - 1
 
 	return nil
 }
