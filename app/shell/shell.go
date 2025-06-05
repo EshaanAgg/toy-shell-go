@@ -14,15 +14,17 @@ type Shell struct {
 	input          []byte
 	cursorPosition int
 
-	history       []string
-	curHistoryIdx int
+	history             []string
+	curHistoryIdx       int
+	lastSavedHistoryIdx int
 
 	hadMultipleMatched bool
 }
 
 func NewShell() *Shell {
 	s := &Shell{
-		curHistoryIdx: -1,
+		curHistoryIdx:       -1,
+		lastSavedHistoryIdx: -1,
 	}
 	s.EnterRAWMode()
 	return s

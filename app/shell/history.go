@@ -2,11 +2,69 @@ package shell
 
 import (
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 )
+
+// Loads the complete history from the specified file.
+// Also updates the last saved history index to the end of the loaded history.
+func (s *Shell) loadHistory(filePath string) error {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read history file: %w", err)
+	}
+
+	s.history = strings.Split(string(content), "\n")
+	s.lastSavedHistoryIdx = len(s.history) - 1
+
+	return nil
+}
+
+// Saves the history to the specified file.
+// It appends new commands to the file, starting from the last saved index.
+// If the file does not exist, it creates a new one.
+func (s *Shell) saveHistory(filePath string) error {
+	content := strings.Join(s.history[s.lastSavedHistoryIdx+1:], "\n")
+
+	// Open the file in Append mode, create it if it doesn't exist
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to open history file: %w", err)
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(content + "\n")
+	if err != nil {
+		return fmt.Errorf("failed to write to history file: %w", err)
+	}
+
+	s.lastSavedHistoryIdx = len(s.history) - 1
+	return nil
+}
 
 // Handler for the history command
 func (c *command) handleHistory(s *Shell) {
+	// Handle -w, -r and -a flags for history command
+	if len(c.args) == 3 {
+		switch c.args[1] {
+		case "-w", "-a":
+			if err := s.saveHistory(c.args[2]); err != nil {
+				fmt.Fprintf(c.errFile, "Error saving history: %v\r\n", err)
+			}
+			return
+		case "-r":
+			if err := s.loadHistory(c.args[2]); err != nil {
+				fmt.Fprintf(c.errFile, "Error loading history: %v\r\n", err)
+			}
+			return
+		default:
+			fmt.Fprintf(c.errFile, "Unknown flag: %s\r\n", c.args[1])
+			return
+		}
+	}
+
+	// Handle printing the history
 	startIdx := 0
 	if len(c.args) > 1 {
 		cmdCnt, err := strconv.Atoi(c.args[1])
