@@ -9,14 +9,24 @@ import (
 
 // Loads the complete history from the specified file.
 // Also updates the last saved history index to the end of the loaded history.
-func (s *Shell) loadHistory(filePath string) error {
+func (s *Shell) loadHistory(filePath string, addCurrentCmd bool) error {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read history file: %w", err)
 	}
 
+	// Split the content by newlines to get the history commands
+	// and remove the last empty line if it exists.
 	s.history = strings.Split(string(content), "\n")
-	s.lastSavedHistoryIdx = len(s.history) - 1
+	if len(s.history) > 0 && s.history[len(s.history)-1] == "" {
+		s.history = s.history[:len(s.history)-1]
+	}
+
+	// Add the current command to the history
+	if addCurrentCmd && s.input != nil && len(s.input) > 0 {
+		s.history = append(s.history, string(s.input))
+		s.lastSavedHistoryIdx = len(s.history) - 1
+	}
 
 	return nil
 }
@@ -54,7 +64,7 @@ func (c *command) handleHistory(s *Shell) {
 			}
 			return
 		case "-r":
-			if err := s.loadHistory(c.args[2]); err != nil {
+			if err := s.loadHistory(c.args[2], true); err != nil {
 				fmt.Fprintf(c.errFile, "Error loading history: %v\r\n", err)
 			}
 			return
